@@ -1,0 +1,32 @@
+﻿@model AppRole
+@{
+    ViewData["Title"] = "Rol Ekleme Sayfası";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <title>Rol Oluştur</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Rol Oluştur</h2>
+        <hr />
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <hr />
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Kaydet
+            </button>
+        </form>
+    </div>
+</body>
+</html>

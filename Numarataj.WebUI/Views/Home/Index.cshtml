@@ -1,0 +1,145 @@
+﻿@using Numarataj.DTO.DTOs.MergedDataDtos
+@model List<MergedDataDto>
+
+@{
+    ViewData["Title"] = "";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (Model != null && Model.Any())
+{
+    <table id="mergedDataTable" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>B.No</th>
+                <th>TC</th>
+                <th>Ad Soyad</th>
+                <th>Tarih</th>
+                <th>Telefon</th>
+                <th>Mahalle</th>
+                <th>Sokak</th>
+                <th>D.Kapı</th>
+                <th>İşlem</th>
+                <th>Seçim</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var siraNo = 1;
+            }
+            @foreach (var item in Model)
+            {
+                <tr data-id="@item.BelgeNoId" data-tc-hidden="false">
+                    <td>@item.BelgeNoId</td>
+                    <td class="tc-kimlik">
+                        <span class="tc-value">@item.TcKimlikNo</span>
+                        <input type="checkbox" class="hide-tc-checkbox" onclick="toggleTcVisibility(this, @item.BelgeNoId)" />
+                    </td>
+                    <td>@item.AdSoyad</td>
+                    <td>@item.Tarih</td>
+                    <td>@item.Telefon</td>
+                    <td>@item.Mahalle</td>
+                    <td>@item.CaddeSokak</td>
+                    <td>@item.DisKapi</td>
+                    <td>
+                        <div class="btn-group">
+                            <button onclick="generatePdfWithSelection(@siraNo,@item.BelgeNoId)" class="btn btn-outline-info pdf-button">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" id="type_@siraNo" value="@item.Type" />
+                        <select class="form-control" id="selectType_@siraNo">
+                            <option value="1">Adres Tespit</option>
+                            <option value="2">Saha Çalışması</option>
+                            <option value="3">Yeni Bina</option>
+                            <option value="4">Resmi Kurum</option>
+                            <option value="5">Özel İşyeri</option>
+                        </select>
+                    </td>
+                </tr>
+                siraNo++;
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Veri bulunamadı.</p>
+}
+
+<script>
+    $(document).ready(function () {
+        if ($.fn.DataTable.isDataTable('#mergedDataTable')) {
+            $('#mergedDataTable').DataTable().destroy();
+        }
+        $('#mergedDataTable').DataTable();
+    });
+
+    function getTitleByType(type) {
+        switch (type) {
+            case '1': return 'Adres Tespit';
+            case '2': return 'Saha Çalışması';
+            case '3': return 'Yeni Bina';
+            case '4': return 'Resmi Kurum';
+            case '5': return 'Özel İşyeri';
+            default: return 'Belirtilmemiş';
+        }
+    }
+
+    function generatePdfWithSelection(id, blgId) {
+        var selectBox = document.getElementById("selectType_" + id);
+        var selectedType = selectBox.value;
+        var title = getTitleByType(selectedType);
+        var typeValue = document.getElementById("type_" + id);
+        var type = typeValue.value;
+
+        var row = $('#mergedDataTable tr[data-id="' + id + '"]');
+        var tcHidden = row.attr("data-tc-hidden") === "true";
+        var tcKimlikNo = !tcHidden ? row.find('.tc-value').text() : "";
+
+        var pdfUrl = `@Url.Action("GeneratePdf", "Pdf", new { area = "Admin" })` +
+            `?id=${blgId}&title=${encodeURIComponent(title)}` +
+            `&pdfName=${encodeURIComponent(id + ".pdf")}` +
+            `&type=${type}&tcKimlikNo=${encodeURIComponent(tcKimlikNo)}` +
+            `&isTcHidden=${tcHidden}`;
+
+        window.location.href = pdfUrl;
+    }
+
+    function toggleTcVisibility(checkbox, id) {
+        var tcSpan = $('#mergedDataTable tr[data-id="' + id + '"]').find('.tc-value');
+        var row = $('#mergedDataTable tr[data-id="' + id + '"]');
+
+        if (checkbox.checked) {
+            tcSpan.hide();
+            row.attr("data-tc-hidden", "true");
+        } else {
+            tcSpan.show();
+            row.attr("data-tc-hidden", "false");
+        }
+    }
+    $(document).ready(function () {
+    if ($.fn.DataTable.isDataTable('#mergedDataTable')) {
+        $('#mergedDataTable').DataTable().destroy();
+    }
+    $('#mergedDataTable').DataTable({
+        "paging": true,
+        "ordering": true,
+        "searching": true, // Eğer arama kutusunu tamamen kaldırmak istiyorsanız false yapabilirsiniz.
+        "info": true,
+        "lengthChange": true,
+        "dom": 'lrtip', // "f" kaldırıldı, arama kutusunu gizler.
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Turkish.json"
+        }
+    });
+});
+</script>
+
+<style>
+    #mergedDataTable tbody tr:hover {
+        background-color: #91c6ff !important;
+    }
+</style>

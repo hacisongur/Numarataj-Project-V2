@@ -1,0 +1,254 @@
+﻿@model UpdateOzelIsyeriDto
+@{
+    ViewData["Title"] = "Özel İş Yeri Güncelleme Sayfası";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<style>
+    .custom-form-container {
+        background-color: #e6e0f8; /* Açık mor renk */
+        padding: 20px; /* Formun çevresine dolgu */
+        border-radius: 8px; /* Kenarları yuvarlatmak için */
+    }
+</style>
+
+<form id="ozelIsyeriForm" method="post" asp-area="Admin" asp-controller="OzelIsyeri" asp-action="UpdateOzelIsyeri" class="custom-form-container">
+    <input type="hidden" name="BelgeNoId" value="@Model.BelgeNoId" />
+    @Html.AntiForgeryToken()
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <td>
+                    <label for="TcKimlikNo" class="form-label">TC Kimlik No</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="TcKimlikNo" name="TcKimlikNo"
+                               placeholder="TC Kimlik No" maxlength="11"
+                               value="@(Model?.TcKimlikNo ?? "")"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);">
+                    </div>
+                </td>
+                <td>
+                    <label for="Telefon" class="form-label">Telefon</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="Telefon" name="Telefon"
+                               placeholder="Telefon Numaranız" maxlength="11"
+                               value="@(Model?.Telefon ?? "")"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="AdSoyad" class="form-label">Adı Soyadı</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="AdSoyad" name="AdSoyad"
+                               placeholder="Adı Soyadı" maxlength="100"
+                               value="@(Model?.AdSoyad ?? "")"
+                               oninput="this.value = this.value.toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+                <td>
+                    <label for="inputMahalle" class="form-label">Mahalle</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                        </div>
+                        @Html.DropDownListFor(model => model.Mahalle,
+                                 (IEnumerable<SelectListItem>)ViewBag.MahalleListesi,
+                                 new { @class = "form-control", id = "inputMahalle", required = "required" })
+                    </div>
+                    <span class="text-danger" id="mahalleError" style="display: none;">Lütfen bir mahalle seçiniz!</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="CaddeSokak" class="form-label">Cadde/Sokak</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-road"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="CaddeSokak" name="CaddeSokak"
+                               placeholder="Cadde/Sokak" maxlength="100"
+                               value="@(Model?.CaddeSokak ?? "")"
+                               oninput="this.value = this.value.toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+                <td>
+                    <label for="DisKapi" class="form-label">Dış Kapı No</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-door-open"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="DisKapi" name="DisKapi"
+                               placeholder="Dış Kapı No" maxlength="4"
+                               value="@(Model?.DisKapi ?? "")"
+                               oninput="this.value = this.value.toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="IcKapiNo" class="form-label">İç Kapı No</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-door-closed"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="IcKapiNo" name="IcKapiNo"
+                               placeholder="İç Kapı No" maxlength="4"
+                               value="@(Model?.IcKapiNo ?? "")"
+                               oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4);">
+                    </div>
+                </td>
+
+                <td>
+                    <label for="SiteAdi" class="form-label">Site Adı/Blok</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-road"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="SiteAdi" name="SiteAdi"
+                               placeholder="Site Adı/Blok" maxlength="100"
+                               value="@(Model?.SiteAdi ?? "")"
+                               oninput="this.value = this.value.toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="BlokAdi" class="form-label">Blok Adı</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-building"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="BlokAdi" name="BlokAdi"
+                               placeholder="Blok Adı" maxlength="50"
+                               value="@(!string.IsNullOrEmpty(Model?.BlokAdi) ? Model.BlokAdi : string.Empty)"
+                               oninput="this.value = this.value.slice(0, 50).toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+
+                <td>
+                    <label for="AdresNo" class="form-label">Adres No (UAVT)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="AdresNo" name="AdresNo"
+                               placeholder="Adres No (UAVT)" maxlength="10"
+                               value="@(Model?.AdresNo ?? "")"
+                               oninput="this.value = this.value.slice(0, 10);">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="IsYeriUnvani" class="form-label">İş Yeri Unvanı</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="IsYeriUnvani" name="IsYeriUnvani"
+                               placeholder="İş Yeri Unvanı" maxlength="100"
+                               value="@(!string.IsNullOrEmpty(Model?.IsYeriUnvani) ? Model.IsYeriUnvani : string.Empty)"
+                               oninput="this.value = this.value.slice(0, 100).toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+                <td>
+                    <label for="Ada" class="form-label">Ada</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-map"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="Ada" name="Ada"
+                               placeholder="Ada" maxlength="6"
+                               value="@(Model?.Ada ?? "")"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Parsel" class="form-label">Parsel</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-map"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="Parsel" name="Parsel"
+                               placeholder="Parsel" maxlength="6"
+                               value="@(Model?.Parsel ?? "")"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);">
+                    </div>
+                </td>
+                <td>
+                    <label for="EskiAdres" class="form-label">Eski Adres</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-map-signs"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="EskiAdres" name="EskiAdres"
+                               placeholder="Eski Adres" maxlength="250"
+                               value="@(Model?.EskiAdres ?? "")"
+                               oninput="this.value = this.value.toLocaleUpperCase('tr-TR');">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-center">
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="form-group col-md-4">
+        <input type="hidden" id="Tarih" name="Tarih" value="@Model.Tarih" />
+    </div>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const today = new Date();
+
+        // Yerel saat dilimine göre tarih ve saat formatı
+        const offset = today.getTimezoneOffset() * 60000; // dakika cinsinden offset'i milisaniyeye çevir
+        const localTime = new Date(today.getTime() - offset);
+
+        // Formatlayarak tarih ve saati al
+        const formattedDate = localTime.toISOString().substring(0, 16);
+        document.getElementById('Tarih').value = formattedDate;
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('ozelIsyeriForm');
+
+        form.addEventListener('input', function (event) {
+            const input = event.target;
+
+            // Yalnızca metin ve telefon alanlarında dönüşüm yap
+            if (input.type === 'text' || input.type === 'tel') {
+                input.value = input.value.toLocaleUpperCase('tr-TR'); // Türkçe büyük harf dönüştürme
+            }
+        });
+
+        form.addEventListener('submit', function (event) {
+            // Submit sırasında bir daha kontrol etmek için
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(function (input) {
+                if (input.type === 'text' || input.type === 'tel') {
+                    input.value = input.value.toLocaleUpperCase('tr-TR');
+                }
+            });
+        });
+    });
+</script>

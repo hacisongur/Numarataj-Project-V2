@@ -1,0 +1,181 @@
+﻿@model List<ResultSahaCalismasiDto>
+
+@{
+    ViewData["Title"] = "SAHA ÇALIŞMASI SAYFASI";
+
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .btn-outline-danger {
+        background-color: #d9534f;
+        color: white;
+    }
+
+    .btn-outline-info {
+        background-color: #5bc0de;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        background-color: #0275d8;
+        color: white;
+    }
+
+    .btn-outline-success {
+        background-color: #5cb85c;
+        color: white;
+    }
+
+    #sahaCalismasiTable tbody tr:hover > td {
+        background-color: #91c6ff !important;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    table.dataTable {
+        margin: 0;
+    }
+
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 5px;
+    }
+
+    .alert-container {
+        margin-top: 10px;
+    }
+
+    .top-button-container {
+        display: flex;
+        position: relative;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+
+        .top-button-container a {
+            position: absolute;
+            top: 5px;
+            right: 0;
+            z-index: 10;
+        }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+
+{
+    <div id="successMessage" class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="container mt-2">
+    <div class="top-button-container">
+        <a asp-action="CreateSahaCalismasi" asp-controller="SahaCalismasi" asp-area="Admin" class="btn btn-outline-primary">Saha Çalışması Ekle</a>
+    </div>
+    <table id="sahaCalismasiTable" class="display table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>B.No</th>
+                <th>Ad Soyad</th>
+                <th>Tarih</th>
+                <th>Mahalle</th>
+                <th>Dış Kapı</th>
+                <th>Ada</th>
+                <th>Parsel</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.BelgeNoId</td>
+                    <td>@item.AdSoyad</td>
+                    <td>@item.Tarih</td>
+                    <td>@item.Mahalle</td>
+                    <td>@item.DisKapi</td>
+                    <td>@item.Ada</td>
+                    <td>@item.Parsel</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal-@item.BelgeNoId">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <a asp-action="UpdateSahaCalismasi" asp-area="Admin" asp-controller="SahaCalismasi" asp-route-belgeNoId="@item.BelgeNoId" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#"
+                               class="btn btn-sm btn-outline-info generate-pdf-button"
+                               data-id="@item.BelgeNoId"
+                               data-title="SAHA ÇALIŞMASI"
+                               data-type="3">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Modal Structure for Delete Confirmation -->
+                <div class="modal fade" id="deleteModal-@item.BelgeNoId" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel-@item.BelgeNoId" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="deleteModalLabel-@item.BelgeNoId">Silme Onayı</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Bu kaydı silmek istediğinize emin misiniz?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Vazgeç</button>
+                                <form asp-action="DeleteSahaCalismasi" asp-controller="SahaCalismasi" asp-area="Admin" asp-route-id="@item.BelgeNoId" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Onayla</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll('.generate-pdf-button').forEach(button => {
+         button.addEventListener('click', function (event) {
+             event.preventDefault();
+
+             const id = this.getAttribute('data-id');
+             const title = this.getAttribute('data-title');
+             const type = this.getAttribute('data-type');
+
+             // Aynı satırdaki TC gizleme checkbox'ının durumunu kontrol et
+             const checkbox = this.closest('tr').querySelector('.hide-tc-checkbox');
+             const isTcHidden = checkbox && checkbox.checked ? "true" : "false";
+
+             // PDF URL'sine `isTcHidden` parametresini ekleyerek gönder
+             const url = `/Admin/Pdf/GeneratePdf?id=${id}&title=${encodeURIComponent(title)}&type=${type}&isTcHidden=${isTcHidden}`;
+
+             window.open(url, '_blank');
+         });
+     });
+
+    // Başarı mesajını gizle
+    setTimeout(function () {
+        const successMessage = document.getElementById("successMessage");
+        if (successMessage) {
+            successMessage.style.display = "none";
+        }
+    }, 2000);
+</script>

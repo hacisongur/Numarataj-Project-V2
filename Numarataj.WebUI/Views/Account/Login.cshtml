@@ -1,0 +1,117 @@
+﻿@model LoginViewModel
+
+<!DOCTYPE html>
+<html dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="/matrix-admin-master/assets/images/favicon.png">
+    <link href="/matrix-admin-master/dist/css/style.min.css" rel="stylesheet">
+    <style>
+        /* Tam ekran arka plan ve ortalanmış form */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #343a40;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .auth-box {
+            background-color: #343a40;
+            border: 1px solid #555;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group-text {
+            border: none;
+        }
+
+        .btn-success {
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <div id="loginform">
+                <div class="text-center p-t-5 p-b-5">
+                    <span class="db">
+                        <img src="/matrix-admin-master/assets/images/logo-beyaz.png" alt="logo" width="200px;" height="auto;" />
+                    </span>
+                </div>
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="errorMessage" style="display:none;">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+
+                <form class="form-horizontal m-t-20" asp-action="Login" method="post">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-danger text-white" id="basic-addon1">
+                                <i class="ti-user"></i>
+                            </span>
+                        </div>
+                        <input asp-for="Email" class="form-control form-control-lg" placeholder="Email" aria-label="Email" aria-describedby="basic-addon1" required="">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-warning text-white" id="basic-addon2">
+                                <i class="ti-pencil"></i>
+                            </span>
+                        </div>
+                        <input asp-for="Password" class="form-control form-control-lg" placeholder="Şifre" aria-label="Password" aria-describedby="basic-addon2" required="">
+                    </div>
+                    <div class="form-group text-center m-t-20">
+                        <button class="btn btn-success btn-block" type="submit">Giriş Yap</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/matrix-admin-master/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="/matrix-admin-master/assets/libs/popper.js/dist/umd/popper.min.js"></script>
+    <script src="/matrix-admin-master/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Sadece sayfa yüklendiğinde TempData mesajlarını kontrol et
+            if ($('#errorMessage').length) {
+                setTimeout(function () {
+                    $('#errorMessage').fadeIn(); // Hata mesajını göster
+                }, 1000); // 1000 milisaniye = 1 saniye
+            }
+        });
+
+        $(".preloader").fadeOut();
+    </script>
+</body>
+</html>

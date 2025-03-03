@@ -1,0 +1,190 @@
+﻿@model List<ResultAdresTespitDto>
+
+@{
+    ViewData["Title"] = "ADRES TESPİT SAYFASI";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .btn-outline-danger {
+        background-color: #d9534f;
+        color: white;
+    }
+
+    .btn-outline-info {
+        background-color: #5bc0de;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        background-color: #0275d8;
+        color: white;
+    }
+
+    .btn-outline-success {
+        background-color: #5cb85c;
+        color: white;
+    }
+
+    /* Hover effect for the entire row, including B.No column */
+    #adresTespitTable tbody tr:hover > td {
+        background-color: #91c6ff !important; /* Açık mavi */
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+
+
+    .top-button-container {
+        display: flex;
+        position: relative;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+
+        .top-button-container a {
+            position: absolute;
+            top: 5px;
+            right: 0;
+            z-index: 10;
+        }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successMessage" class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="container mt-2">
+    <div class="top-button-container">
+        <a asp-action="CreateAdresTespit" asp-controller="AdresTespit" asp-area="Admin" class="btn btn-outline-primary">Adres Tespit Ekle</a>
+    </div>
+    <table id="adresTespitTable" class="display table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>B.No</th>
+                <th>TC</th>
+                <th>Ad/Soyad</th>
+                <th>Tarih</th>
+                <th>Telefon</th>
+                <th>Mahalle</th>
+                <th>Sokak</th>
+                <th>D.Kapı</th>
+                <th>İç.Kapı</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.BelgeNoId</td>
+                    <td class="tc-kimlik">
+                        <span class="tc-value">@item.TcKimlikNo</span>
+                        <input type="checkbox" class="hide-tc-checkbox" />
+                    </td>
+                    <td>@item.AdSoyad</td>
+                    <td>@item.Tarih</td>
+                    <td>@item.Telefon</td>
+                    <td>@item.Mahalle</td>
+                    <td>@item.CaddeSokak</td>
+                    <td>@item.DisKapi</td>
+                    <td>@item.IcKapiNo</td>
+                    <td>
+                        <div class="btn-group">
+                            <!-- Silme Butonu -->
+                            <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal-@item.BelgeNoId">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <!-- Güncelleme Butonu -->
+                            <a asp-area="Admin" asp-controller="AdresTespit" asp-action="UpdateAdresTespit" asp-route-belgeNoId="@item.BelgeNoId" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <!-- PDF Oluşturma Butonu -->
+                            <a href="#"
+                               class="btn btn-sm btn-outline-info generate-pdf-button"
+                               data-id="@item.BelgeNoId"
+                               data-title="ADRES TESPİT"
+                               data-type="1">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </a>
+                        </div>
+
+                        <!-- Silme Onay Modali -->
+                        <div class="modal fade" id="deleteModal-@item.BelgeNoId" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel-@item.BelgeNoId" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title" id="deleteModalLabel-@item.BelgeNoId">Silme Onayı</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Bu kaydı silmek istediğinize emin misiniz?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                                        <form asp-action="DeleteAdresTespit" asp-controller="AdresTespit" asp-area="Admin" asp-route-id="@item.BelgeNoId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger">Sil</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll('.generate-pdf-button').forEach(button => {
+         button.addEventListener('click', function (event) {
+             event.preventDefault();
+
+             const id = this.getAttribute('data-id');
+             const title = this.getAttribute('data-title');
+             const type = this.getAttribute('data-type');
+
+             // Aynı satırdaki TC gizleme checkbox'ının durumunu kontrol et
+             const checkbox = this.closest('tr').querySelector('.hide-tc-checkbox');
+             const isTcHidden = checkbox && checkbox.checked ? "true" : "false";
+
+             // PDF URL'sine `isTcHidden` parametresini ekleyerek gönder
+             const url = `/Admin/Pdf/GeneratePdf?id=${id}&title=${encodeURIComponent(title)}&type=${type}&isTcHidden=${isTcHidden}`;
+
+             window.open(url, '_blank');
+         });
+     });
+
+    // Dinamik PDF oluşturma URL'si
+    document.querySelectorAll('.generate-pdf-button').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            const id = this.getAttribute('data-id');
+            const title = this.getAttribute('data-title');
+            const type = this.getAttribute('data-type');
+            const url = `@Url.Action("GeneratePdf", "Pdf", new { area = "Admin" })` +
+                `?id=${id}&title=${encodeURIComponent(title)}&type=${type}`;
+            window.open(url, '_blank');
+        });
+    });
+
+    // Başarı mesajını gizle
+    setTimeout(() => {
+        const successMessage = document.getElementById("successMessage");
+        if (successMessage) successMessage.style.display = "none";
+    }, 2000);
+</script>
