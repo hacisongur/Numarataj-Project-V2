@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\vuexy-bootstrap-html-admin-template\.vscode\extensions.json" />
+    <Content Include="wwwroot\vuexy-bootstrap-html-admin-template\.vscode\settings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
   </ItemGroup>
